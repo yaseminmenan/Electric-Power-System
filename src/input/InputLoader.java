@@ -18,7 +18,8 @@ import java.util.List;
 
 import common.Constants;
 import common.Update;
-import producer.Producer;
+import producer.InputProducer;
+import producer.ProducerFactory;
 
 /**
  * The class reads and parses the data from the tests
@@ -45,10 +46,11 @@ public final class InputLoader {
         List<Update> monthlyUpdates = new ArrayList<>();
         List<InputConsumer> consumers = new ArrayList<>();
         List<InputDistributor> distributors = new ArrayList<>();
-        List<Producer> producers = new ArrayList<>();
+        List<InputProducer> producers = new ArrayList<>();
 
         ConsumerFactory consumerFactory = ConsumerFactory.getInstance();
         DistributorFactory distributorFactory = DistributorFactory.getInstance();
+        ProducerFactory producerFactory = ProducerFactory.getInstance();
 
         try {
             // Parsing the contents of the JSON file
@@ -74,15 +76,8 @@ public final class InputLoader {
 
             if (jsonProducers != null) {
                 for (Object jsonProducer : jsonProducers) {
-                    // Create consumer
-                    //InputConsumer consumer = consumerFactory.createEntity();
-                    // Insert initial data to consumer
-                   // consumer.insertInitialData(
-                   //         (long) ((JSONObject) jsonConsumer).get(Constants.ID),
-                   //         (long) ((JSONObject) jsonConsumer).get(Constants.INITIALBUDGET),
-                   //         (long) ((JSONObject) jsonConsumer).get(Constants.MONTHLYINCOME));
-                    Producer producer = new Producer(
-                            (long) ((JSONObject) jsonProducer).get(Constants.ID),
+                    InputProducer producer = ProducerFactory.createEntity();
+                    producer.insertInitialData((long)((JSONObject) jsonProducer).get(Constants.ID),
                             EnergyType.valueOf(
                                    (String) ((JSONObject) jsonProducer).get(Constants.ENERGYTYPE)),
                             (long) ((JSONObject) jsonProducer).get(Constants.MAXDISTRIBUTORS),
@@ -102,7 +97,7 @@ public final class InputLoader {
                     // Initialise list of distributor costs changes for the update
                     List<InputDistributor> distributorChanges = new ArrayList<>();
 
-                    List<Producer> producerChanges = new ArrayList<>();
+                    List<InputProducer> producerChanges = new ArrayList<>();
 
                     JSONArray jsonNewConsumers =
                           (JSONArray) ((JSONObject) jsonMonthlyUpdate).get(Constants.NEWCONSUMERS);
@@ -113,11 +108,11 @@ public final class InputLoader {
                         newConsumers = null;
                     }
 
-                    JSONArray jsondistributorChanges =
+                    JSONArray jsonDistributorChanges =
                           (JSONArray) ((JSONObject) jsonMonthlyUpdate).get(Constants.DISTRCHANGES);
                     // Create list of distributor costs changes
-                    if (jsondistributorChanges != null) {
-                        readDistributorChangesData(distributorChanges, jsondistributorChanges,
+                    if (jsonDistributorChanges != null) {
+                        readDistributorChangesData(distributorChanges, jsonDistributorChanges,
                                 distributorFactory);
                     } else {
                         distributorChanges = null;
@@ -126,17 +121,9 @@ public final class InputLoader {
                     JSONArray jsonProducerChanges = (JSONArray) ((JSONObject)
                                     jsonMonthlyUpdate).get(Constants.PRODUCERCHANGES);
                     if (jsonProducerChanges != null) {
-                      //  readDistributorChangesData(distributorChanges, jsondistributorChanges,
-                      //          distributorFactory);
                         for (Object jsonProducer : jsonProducerChanges) {
-                            // Create distributor
-                          //  InputDistributor distributor = distributorFactory.createEntity();
-                            // Insert data changes to distributor
-                         //   distributor.insertInitialData(
-                         //           (long) ((JSONObject) jsonCostChanges).get(Constants.ID), 0,
-                         //           0, (long) ((JSONObject) jsonCostChanges).get(Constants.INFRCOST),
-                          //          0,"");
-                            Producer producer = new Producer(
+                            InputProducer producer = ProducerFactory.createEntity();
+                            producer.insertInitialData(
                                     (long) ((JSONObject) jsonProducer).get(Constants.ID),
                                     null, 0, 0,
                                     (long) ((JSONObject) jsonProducer).get(Constants.ENERGYPERDISTR));
@@ -207,16 +194,16 @@ public final class InputLoader {
      * Reads distributor costs changes from file and adds them to the list
      */
     public void readDistributorChangesData(final List<InputDistributor> distributorChanges,
-                                           final JSONArray jsondistributorChanges,
+                                           final JSONArray jsonDistributorChanges,
                                            final DistributorFactory distributorFactory) {
-        for (Object jsonCostChanges : jsondistributorChanges) {
+        for (Object jsonCostChanges : jsonDistributorChanges) {
             // Create distributor
             InputDistributor distributor = distributorFactory.createEntity();
             // Insert data changes to distributor
             distributor.insertInitialData(
                     (long) ((JSONObject) jsonCostChanges).get(Constants.ID), 0,
                     0, (long) ((JSONObject) jsonCostChanges).get(Constants.INFRCOST),
-                    0,"");
+                    0,"NONE");
             // Add distributor changes to list
             distributorChanges.add(distributor);
         }

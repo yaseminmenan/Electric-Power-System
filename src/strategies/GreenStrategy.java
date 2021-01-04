@@ -1,6 +1,6 @@
 package strategies;
 
-import producer.Producer;
+import producer.InputProducer;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,12 +11,12 @@ import java.util.stream.Stream;
 public class GreenStrategy implements EnergyStrategy {
     final double THRESHOLD =  0.000001;
     // renewable energy > pret > cantitate > id
-    public List<Producer> getBestProducer(List<Producer> producers){
-        List<Producer> sortedList = new ArrayList<>();
+    public List<InputProducer> getBestProducer(List<InputProducer> producers){
+        List<InputProducer> sortedList = new ArrayList<>();
        // sortedList = producers;
-        List<Producer> renewableList = new ArrayList<>();
-        List<Producer> notRenewableList = new ArrayList<>();
-        for (Producer producer : producers) {
+        List<InputProducer> renewableList = new ArrayList<>();
+        List<InputProducer> notRenewableList = new ArrayList<>();
+        for (InputProducer producer : producers) {
             if (producer.getEnergyType().isRenewable()) {
                 renewableList.add(producer);
             } else {

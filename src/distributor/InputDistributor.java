@@ -2,8 +2,10 @@ package distributor;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import common.Constants;
 import common.Contract;
-import producer.Producer;
+import input.Input;
+import producer.InputProducer;
 import strategies.EnergyChoiceStrategyType;
+import strategies.EnergyStrategyFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +28,7 @@ public class InputDistributor implements Distributor {
 
     //private boolean hasProducer;
     @JsonIgnore
-    private List<Producer> producers;
+    private List<InputProducer> producers;
 
     public InputDistributor() {
 
@@ -135,11 +137,11 @@ public class InputDistributor implements Distributor {
         this.producerStrategy = producerStrategy;
     }
 
-    public List<Producer> getProducers() {
+    public List<InputProducer> getProducers() {
         return producers;
     }
 
-    public void setProducers(List<Producer> producers) {
+    public void setProducers(List<InputProducer> producers) {
         this.producers = producers;
     }
 
@@ -207,10 +209,40 @@ public class InputDistributor implements Distributor {
         //cost = sum (cantitate energie de la producator * pret pe Kw de la producator)
         //productionCost = Math.round(Math.floor(cost / 10));
         float cost = 0;
-        for (Producer producer : producers) {
+        for (InputProducer producer : producers) {
+           // System.out.println("producer id: " +producer.getId());
             cost += producer.getEnergyPerDistributor() * producer.getPriceKW();
         }
         this.productionCost =  Math.round(Math.floor(cost / 10));
+    }
+
+    public void update(final long producerId, final Input input) {
+        this.producers.removeIf(producer -> producer.getId() == producerId);
+            long energy = 0;
+            for (InputProducer producer : this.getProducers()) {
+                energy += producer.getEnergyPerDistributor();
+            }
+            EnergyStrategyFactory factory = new EnergyStrategyFactory();
+            var strategy = factory.createStrategy(this.getProducerStrategy());
+            List<InputProducer> producerList = strategy.getBestProducer(input.getEnergyProducers());
+            for (InputProducer producer : producerList) {
+                if (!this.getProducers().contains(producer) &&
+                        producer.getDistributors().size() < producer.getMaxDistributors()) {
+                    if (energy < this.getEnergyNeededKW()) {
+                        energy += producer.getEnergyPerDistributor();
+                        // producer.addObserver(distributor);
+                        producer.getDistributors().add(this);
+                        this.getProducers().add(producer);
+
+                    }
+                    else if (energy >= this.getEnergyNeededKW()) {
+                        break;
+                    }
+                }
+            }
+            this.calculateProductionCost();
+          //  this.calculateContractCost();
+
     }
 
     @Override

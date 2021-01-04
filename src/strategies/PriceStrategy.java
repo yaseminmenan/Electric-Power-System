@@ -1,18 +1,17 @@
 package strategies;
 
-import producer.Producer;
+import producer.InputProducer;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 public class PriceStrategy implements EnergyStrategy {
     final double THRESHOLD =  0.000001;
 
     // pret > cantitate > id
-    public List<Producer> getBestProducer(List<Producer> producers){
-        List<Producer> sortedList = new ArrayList<>(producers);
+    public List<InputProducer> getBestProducer(List<InputProducer> producers){
+        List<InputProducer> sortedList = new ArrayList<>(producers);
         Collections.sort(sortedList, (p1, p2) -> {
             // int value1 = p2.campus.compareTo(p1.campus);
             if (Math.abs(p2.getPriceKW() - p1.getPriceKW()) <= THRESHOLD) {

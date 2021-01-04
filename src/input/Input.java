@@ -4,7 +4,7 @@ import common.Constants;
 import consumer.InputConsumer;
 import distributor.InputDistributor;
 import common.Update;
-import producer.Producer;
+import producer.InputProducer;
 
 import java.util.List;
 
@@ -13,13 +13,13 @@ public class Input {
     private final long numberOfTurns;
     private List<InputConsumer> consumers;
     private List<InputDistributor> distributors;
-    private List<Producer> energyProducers;
+    private List<InputProducer> energyProducers;
     @JsonIgnore
     private List<Update> monthlyUpdates;
 
     public Input(final long numberOfTurns, final List<InputConsumer> consumers,
                  final List<InputDistributor> distributors,
-                 final List<Producer> producers,
+                 final List<InputProducer> producers,
                  final List<Update> updates) {
         this.numberOfTurns = numberOfTurns;
         this.consumers = consumers;
@@ -42,11 +42,11 @@ public class Input {
         return monthlyUpdates;
     }
 
-    public List<Producer> getEnergyProducers() {
+    public List<InputProducer> getEnergyProducers() {
         return energyProducers;
     }
 
-    public void setEnergyProducers(List<Producer> producers) {
+    public void setEnergyProducers(List<InputProducer> producers) {
         this.energyProducers = producers;
     }
 
@@ -88,8 +88,8 @@ public class Input {
         return null;
     }
 
-    public Producer getProducer(final long id) {
-        for (Producer producer : this.getEnergyProducers()) {
+    public InputProducer getProducer(final long id) {
+        for (InputProducer producer : this.getEnergyProducers()) {
             if (producer.getId() == id) {
                 return producer;
             }

@@ -3,7 +3,7 @@ package common;
 import consumer.InputConsumer;
 import distributor.InputDistributor;
 import input.Input;
-import producer.Producer;
+import producer.InputProducer;
 
 import java.util.List;
 
@@ -11,11 +11,11 @@ public class Update {
     private List<InputConsumer> newConsumers;
     //distributorChanges
     private List<InputDistributor> distributorChanges;
-    private List<Producer> producerChanges;
+    private List<InputProducer> producerChanges;
 
     public Update(final List<InputConsumer> newConsumers,
                   final List<InputDistributor> distributorChanges,
-                  final List<Producer> producerChanges) {
+                  final List<InputProducer> producerChanges) {
         this.newConsumers = newConsumers;
         this.distributorChanges = distributorChanges;
         this.producerChanges = producerChanges;
@@ -58,15 +58,25 @@ public class Update {
                 inputDistributor.setInfrastructureCost(
                         inputDistributorChange.getInfrastructureCost());
                 // Change productions cost
-               // inputDistributor.setProductionCost(inputDistributorChange.getProductionCost());
             }
         }
 
-        if (this.producerChanges.size() != 0) {
-            for( Producer producerChange : this.producerChanges) {
-                Producer producer = input.getProducer(producerChange.getId());
+    }
 
-                producer.setEnergyPerDistributor(producerChange.getEnergyPerDistributor());
+    public List<InputProducer> getProducerChanges() {
+        return producerChanges;
+    }
+
+    public void setProducerChanges(List<InputProducer> producerChanges) {
+        this.producerChanges = producerChanges;
+    }
+
+    public void updateProducers(final Input input) {
+        if (this.producerChanges.size() != 0) {
+            for( InputProducer producerChange : this.producerChanges) {
+                InputProducer producer = input.getProducer(producerChange.getId());
+                producer.setChanged(producerChange, input);
+                // producer.setEnergyPerDistributor(producerChange.getEnergyPerDistributor());
             }
         }
     }

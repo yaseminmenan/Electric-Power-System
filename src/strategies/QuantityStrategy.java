@@ -1,16 +1,15 @@
 package strategies;
 
-import producer.Producer;
+import producer.InputProducer;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 public class QuantityStrategy implements EnergyStrategy {
     // cantitate > id
-    public List<Producer> getBestProducer(List<Producer> producers){
-        List<Producer> sortedList = new ArrayList<>(producers);
+    public List<InputProducer> getBestProducer(List<InputProducer> producers){
+        List<InputProducer> sortedList = new ArrayList<>(producers);
         Collections.sort(sortedList,
              (p1, p2) -> Long.compare(p2.getEnergyPerDistributor(), p1.getEnergyPerDistributor()));
         return sortedList;

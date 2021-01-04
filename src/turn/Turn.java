@@ -8,9 +8,10 @@ import input.Input;
 import common.Contract;
 import common.Update;
 import producer.MonthlyStat;
-import producer.Producer;
+import producer.InputProducer;
 import strategies.EnergyStrategyFactory;
 
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -56,11 +57,12 @@ public class Turn {
         for (InputDistributor distributor : input.getDistributors()) {
             long energy = 0;
             var strategy = factory.createStrategy(distributor.getProducerStrategy());
-            List<Producer> producerList = strategy.getBestProducer(input.getEnergyProducers());
-           // System.out.println(producerList);
-            for (Producer producer : producerList) {
+            List<InputProducer> producerList = strategy.getBestProducer(input.getEnergyProducers());
+
+            for (InputProducer producer : producerList) {
                 if (energy < distributor.getEnergyNeededKW()) {
                     energy += producer.getEnergyPerDistributor();
+                   // producer.addObserver(distributor);
                     producer.getDistributors().add(distributor);
                     distributor.getProducers().add(producer);
 
@@ -71,7 +73,6 @@ public class Turn {
             }
             distributor.calculateProductionCost();
             distributor.calculateContractCost();
-          //  System.out.println(distributor);
 
         }
         consumerOperations(input);
@@ -95,28 +96,10 @@ public class Turn {
      * @param turnNumber - number of the current turn that is simulated
      */
     public void doNormalTurn(final Input input, final int turnNumber, EnergyStrategyFactory factory) {
+      //  System.out.println("TURN " + (turnNumber +1 ));
         // Update consumers and distributors lists for the given turn
         Update update = input.getMonthlyUpdates().get(turnNumber);
         update.updateLists(input);
-/*
-        for (InputDistributor distributor : input.getDistributors()) {
-            long energy = 0;
-            var strategy = factory.createStrategy(distributor.getProducerStrategy());
-            List<Producer> producerList = strategy.getBestProducer(input.getProducers());
-            System.out.println(producerList);
-            for (Producer producer : producerList) {
-                if (energy < distributor.getEnergyNeededKW()) {
-                    energy += producer.getEnergyPerDistributor();
-                    producer.getDistributors().add(distributor);
-                    distributor.getProducers().add(producer);
-                }
-                else if (energy >= distributor.getEnergyNeededKW()) {
-                    break;
-                }
-            }
-            distributor.calculateProductionCost();
-
-        }*/
 
         // Do consumer operations
         consumerOperations(input);
@@ -124,18 +107,18 @@ public class Turn {
         // Do distributor operations
         distributorOperations(input);
 
-        for (Producer producer : input.getEnergyProducers()) {
+        update.updateProducers(input);
+
+        for (InputProducer producer : input.getEnergyProducers()) {
             List<Long> distributorsIds = new ArrayList<>();
             for (InputDistributor distributor : producer.getDistributors()) {
-               // if(!distributorsIds.contains(distributor.getId())){
-                    distributorsIds.add(distributor.getId());
-              //  }
+                // if(!distributorsIds.contains(distributor.getId())){
+                distributorsIds.add(distributor.getId());
+                //  }
             }
             MonthlyStat monthlyStat = new MonthlyStat(turnNumber + 1, distributorsIds);
             producer.getMonthlyStats().add(monthlyStat);
             producer.getDistributors().removeIf(InputDistributor::getIsBankrupt);
-           // distributor.getContracts().removeIf(contract ->
-           //         input.getConsumer(contract.getConsumerId()).getIsBankrupt());
         }
     }
 
@@ -146,10 +129,11 @@ public class Turn {
     public void consumerOperations(final Input input) {
         // Find the distributor with the cheapest contract cost
         InputDistributor cheapestDistributor = input.chooseCheapestDistributor();
-        //long contractCost = cheapestDistributor.calculateContractCost();
+        cheapestDistributor.calculateContractCost();
         long contractCost = cheapestDistributor.getContractCost();
         // Consumers receive income, choose contract, pay rates
         for (InputConsumer consumer : input.getConsumers()) {
+          //  System.out.println("consumer id: "+consumer.getId());
             // Skip the consumer if it is bankrupt
             if (consumer.getIsBankrupt()) {
                 continue;
@@ -176,6 +160,7 @@ public class Turn {
                    consumer.makeContract(cheapestDistributor, contractCost);
                 }
             }
+
 
             // Get the distributor with which the contract has been made
             InputDistributor distributor =
@@ -259,7 +244,6 @@ public class Turn {
             contracts.sort(Comparator.comparing(Contract::getConsumerId));
             contracts.sort(Comparator.comparing(Contract::getRemainedContractMonths));
 
-            // choose new producers if they changed costs
         }
     }
 

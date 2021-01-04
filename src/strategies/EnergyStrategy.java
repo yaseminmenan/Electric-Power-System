@@ -1,9 +1,9 @@
 package strategies;
 
-import producer.Producer;
+import producer.InputProducer;
 
 import java.util.List;
 
 public interface EnergyStrategy {
-    List<Producer> getBestProducer(List<Producer> producers);
+    List<InputProducer> getBestProducer(List<InputProducer> producers);
 }
