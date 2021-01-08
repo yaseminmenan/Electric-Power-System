@@ -24,9 +24,8 @@ public class InputDistributor implements Distributor {
     private long infrastructureCost;
     @JsonIgnore
     private long productionCost;
-
-
-    //private boolean hasProducer;
+    @JsonIgnore
+    private List<InputProducer> changedProducers;
     @JsonIgnore
     private List<InputProducer> producers;
 
@@ -47,6 +46,7 @@ public class InputDistributor implements Distributor {
         this.producerStrategy = EnergyChoiceStrategyType.valueOf(producerStrategy);
         this.contracts = new ArrayList<>();
         this.producers = new ArrayList<>();
+        this.changedProducers = new ArrayList<>();
     }
     /**
      * Insert costs changes data
@@ -174,6 +174,14 @@ public class InputDistributor implements Distributor {
         this.contractLength = contractLength;
     }
 
+    public List<InputProducer> getChangedProducers() {
+        return changedProducers;
+    }
+
+    public void setChangedProducers(List<InputProducer> changedProducers) {
+        this.changedProducers = changedProducers;
+    }
+
     /**
      * Calculate cost of a contract at the beginning of a month
      */
@@ -185,15 +193,12 @@ public class InputDistributor implements Distributor {
         if (this.getContracts().size() == 0) {
             cost = this.getInfrastructureCost() + this.getProductionCost() + profit;
             this.contractCost = cost;
-            //return this.getInfrastructureCost() + this.getProductionCost() + profit;
         } else {
             // Calculate and return the contract cost, dividing the infrastructure costs
             // by the number of current contracts
             cost = Math.round(Math.floor((float) this.getInfrastructureCost()
                     / this.getContracts().size()) + this.getProductionCost() + profit);
             this.contractCost = cost;
-           // return Math.round(Math.floor((float) this.getInfrastructureCost()
-           //         / this.getContracts().size()) + this.getProductionCost() + profit);
         }
     }
 
@@ -206,59 +211,15 @@ public class InputDistributor implements Distributor {
     }
 
     public void calculateProductionCost() {
-        //cost = sum (cantitate energie de la producator * pret pe Kw de la producator)
-        //productionCost = Math.round(Math.floor(cost / 10));
         float cost = 0;
         for (InputProducer producer : producers) {
-           // System.out.println("producer id: " +producer.getId());
             cost += producer.getEnergyPerDistributor() * producer.getPriceKW();
         }
         this.productionCost =  Math.round(Math.floor(cost / 10));
     }
 
     public void update(final long producerId, final Input input) {
-        this.producers.removeIf(producer -> producer.getId() == producerId);
-            long energy = 0;
-            for (InputProducer producer : this.getProducers()) {
-                energy += producer.getEnergyPerDistributor();
-            }
-            EnergyStrategyFactory factory = new EnergyStrategyFactory();
-            var strategy = factory.createStrategy(this.getProducerStrategy());
-            List<InputProducer> producerList = strategy.getBestProducer(input.getEnergyProducers());
-            for (InputProducer producer : producerList) {
-                if (!this.getProducers().contains(producer) &&
-                        producer.getDistributors().size() < producer.getMaxDistributors()) {
-                    if (energy < this.getEnergyNeededKW()) {
-                        energy += producer.getEnergyPerDistributor();
-                        // producer.addObserver(distributor);
-                        producer.getDistributors().add(this);
-                        this.getProducers().add(producer);
-
-                    }
-                    else if (energy >= this.getEnergyNeededKW()) {
-                        break;
-                    }
-                }
-            }
-            this.calculateProductionCost();
-          //  this.calculateContractCost();
-
+        this.changedProducers.add(input.getProducer(producerId));
     }
 
-    @Override
-    public String toString() {
-        return "InputDistributor{" +
-                "id=" + id +
-                ", budget=" + budget +
-                ", contractCost=" + contractCost +
-                ", isBankrupt=" + isBankrupt +
-                ", contracts=" + contracts +
-                ", contractLength=" + contractLength +
-                ", infrastructureCost=" + infrastructureCost +
-                ", productionCost=" + productionCost +
-                ", energyNeededKW=" + energyNeededKW +
-                ", producers=" + producers +
-                ", producerStrategy=" + producerStrategy +
-                '}';
-    }
 }

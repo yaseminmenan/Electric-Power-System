@@ -131,24 +131,4 @@ public class InputConsumer implements Consumer {
     public long calculateDebt(final long cost) {
         return Math.round(Math.floor(Constants.DEBT * cost)) + this.getContract().getPrice();
     }
-
-//    @Override
-//    public String toString() {
-//        return "InputConsumer{" +
-//                "id=" + id +
-//                ", budget=" + budget +
-//                ", monthlyIncome=" + monthlyIncome +
-//                '}';
-//    }
-
-    @Override
-    public String toString() {
-        return "InputConsumer{" +
-                "id=" + id +
-                ", isBankrupt=" + isBankrupt +
-                ", budget=" + budget +
-                ", monthlyIncome=" + monthlyIncome +
-                ", contract=" + contract +
-                '}';
-    }
 }

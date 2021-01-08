@@ -91,24 +91,11 @@ public class InputProducer {
 
     public void setChanged(final InputProducer producerChanges, final Input input) {
         this.energyPerDistributor = producerChanges.getEnergyPerDistributor();
-        List<InputDistributor> distributors = new ArrayList<>(this.distributors);
-        this.distributors.removeAll(this.distributors);
+
         for (InputDistributor distributor : distributors) {
             if (!distributor.getIsBankrupt()) {
                distributor.update(this.id, input);
             }
         }
-
-    }
-    @Override
-    public String toString() {
-        return "Producer{" +
-                "id=" + id +
-                ", energyType=" + energyType +
-                ", maxDistributors=" + maxDistributors +
-                ", priceKW=" + priceKW +
-                ", energyPerDistributor=" + energyPerDistributor +
-                ", monthlyStats=" + monthlyStats +
-                '}';
     }
 }

@@ -1,5 +1,6 @@
 package turn;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import common.Debt;
 import consumer.InputConsumer;
 import distributor.Distributor;
@@ -9,10 +10,12 @@ import common.Contract;
 import common.Update;
 import producer.MonthlyStat;
 import producer.InputProducer;
+import strategies.EnergyChoiceStrategyType;
 import strategies.EnergyStrategyFactory;
 
 import java.sql.SQLOutput;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -29,7 +32,9 @@ public class Turn {
         // Do initial turn
         EnergyStrategyFactory factory = new EnergyStrategyFactory();
         this.doInitialTurn(input, factory);
+      //  System.out.println(input);
 
+      //  System.out.println();
         // Do the normal turns
         for (int i = 0; i < input.getNumberOfTurns(); i++) {
             this.doNormalTurn(input, i, factory);
@@ -45,6 +50,10 @@ public class Turn {
             if (bankruptNr == input.getDistributors().size()) {
                 break;
             }
+
+            //System.out.println(input);
+
+           // System.out.println();
         }
     }
 
@@ -60,7 +69,8 @@ public class Turn {
             List<InputProducer> producerList = strategy.getBestProducer(input.getEnergyProducers());
 
             for (InputProducer producer : producerList) {
-                if (energy < distributor.getEnergyNeededKW()) {
+                if (energy < distributor.getEnergyNeededKW() &&
+                        producer.getDistributors().size() < producer.getMaxDistributors()) {
                     energy += producer.getEnergyPerDistributor();
                    // producer.addObserver(distributor);
                     producer.getDistributors().add(distributor);
@@ -78,15 +88,6 @@ public class Turn {
         consumerOperations(input);
         distributorOperations(input);
 
-    /*    for (Producer producer : input.getEnergyProducers()) {
-            List<Long> distributorsIds = new ArrayList<>();
-            for (InputDistributor distributor : producer.getDistributors()) {
-                distributorsIds.add(distributor.getId());
-            }
-            MonthlyStat monthlyStat = new MonthlyStat(1, distributorsIds);
-            producer.getMonthlyStats().add(monthlyStat);
-
-        }*/
     }
 
     /**
@@ -108,6 +109,47 @@ public class Turn {
         distributorOperations(input);
 
         update.updateProducers(input);
+      //  System.out.println("turn " + (turnNumber +1));
+        for (InputDistributor distributor : input.getDistributors()) {
+            if (distributor.getChangedProducers().size() != 0) {
+                for (InputProducer producer : distributor.getProducers()) {
+                    producer.getDistributors().remove(distributor);
+                    //distributor.getProducers().remove(producer);
+                }
+                //System.out.println(distributor.getProducers());
+                long energy = 0;
+                distributor.getProducers().removeAll(distributor.getProducers());
+
+                var strategy = factory.createStrategy(distributor.getProducerStrategy());
+                List<InputProducer> producerList = strategy.getBestProducer(input.getEnergyProducers());
+//                if (distributor.getProducerStrategy().equals(EnergyChoiceStrategyType.valueOf("GREEN"))) {
+//                    System.out.println("distr id: " + distributor.getId());
+//                    System.out.println("sorted list: " + producerList);
+//                    for (InputProducer producer : producerList) {
+//                        System.out.println("prod id: " + producer.getId() + " " +producer.getDistributors());
+//                    }
+//                    System.out.println();
+//                }
+                for (InputProducer producer : producerList) {
+                    if (producer.getDistributors().size() < producer.getMaxDistributors()) {
+                        if (energy < distributor.getEnergyNeededKW()) {
+                            energy += producer.getEnergyPerDistributor();
+                            // producer.addObserver(distributor);
+                            producer.getDistributors().add(distributor);
+                            distributor.getProducers().add(producer);
+
+                        }
+                        else if (energy >= distributor.getEnergyNeededKW()) {
+                            break;
+                        }
+                    }
+                }
+                distributor.calculateProductionCost();
+              //  System.out.println(distributor.getProducers());
+
+                distributor.getChangedProducers().removeAll(distributor.getChangedProducers());
+            }
+        }
 
         for (InputProducer producer : input.getEnergyProducers()) {
             List<Long> distributorsIds = new ArrayList<>();
@@ -116,6 +158,7 @@ public class Turn {
                 distributorsIds.add(distributor.getId());
                 //  }
             }
+            Collections.sort(distributorsIds);
             MonthlyStat monthlyStat = new MonthlyStat(turnNumber + 1, distributorsIds);
             producer.getMonthlyStats().add(monthlyStat);
             producer.getDistributors().removeIf(InputDistributor::getIsBankrupt);

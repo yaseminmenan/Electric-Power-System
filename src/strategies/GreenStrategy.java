@@ -24,7 +24,7 @@ public class GreenStrategy implements EnergyStrategy {
             }
         }
         Collections.sort(renewableList, (p1, p2) -> {
-            if (Math.abs(p2.getPriceKW() - p1.getPriceKW()) <= THRESHOLD) {
+            if (Math.abs(p2.getPriceKW() - p1.getPriceKW()) <= THRESHOLD ) {
                 return Long.compare(p2.getEnergyPerDistributor(), p1.getEnergyPerDistributor());
             }
             return Double.compare(p1.getPriceKW(), p2.getPriceKW());

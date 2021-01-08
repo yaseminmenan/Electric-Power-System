@@ -110,6 +110,7 @@ public class Input {
                 continue;
             }
             // Calculate contract cost
+            distributor.calculateContractCost();
             long cost = distributor.getContractCost();
             // long cost = distributor.calculateContractCost();
             // If the newly calculated cost is cheaper, set it as the
@@ -123,14 +124,4 @@ public class Input {
         return cheapestDistributor;
     }
 
-    @Override
-    public String toString() {
-        return "Input{" +
-                "numberOfTurns=" + numberOfTurns +
-                "\n, consumers=" + consumers +
-                "\n, distributors=" + distributors +
-                "\n, energyProducers=" + energyProducers +
-                "\n, monthlyUpdates=" + monthlyUpdates +
-                '}';
-    }
 }

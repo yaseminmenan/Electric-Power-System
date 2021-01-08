@@ -66,13 +66,4 @@ public class Contract {
         this.remainedContractMonths = remainedContractMonths;
     }
 
-    @Override
-    public String toString() {
-        return "Contract{" +
-                "distributorId=" + distributorId +
-                ", consumerId=" + consumerId +
-                ", price=" + price +
-                ", remainedContractMonths=" + remainedContractMonths +
-                '}';
-    }
 }

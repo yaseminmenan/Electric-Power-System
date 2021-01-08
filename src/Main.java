@@ -26,7 +26,6 @@ public final class Main {
      */
     public static void main(final String[] args) throws Exception {
         simulate(args[0], args[1]);
-       // simulate("checker/resources/in/basic_15.json","test.out");
     }
 
     /**
@@ -38,13 +37,10 @@ public final class Main {
         // Read data from input file
         InputLoader inputLoader = new InputLoader(inPath);
         Input input = inputLoader.readData();
-       // System.out.println(input);
 
         // Do turns
         Turn turn = new Turn();
         turn.doTurns(input);
-        //System.out.println();
-       // System.out.println(input);
 
         // Write data to output file
         ObjectMapper objectMapper = new ObjectMapper();
