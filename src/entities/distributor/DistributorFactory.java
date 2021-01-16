@@ -1,4 +1,4 @@
-package distributor;
+package entities.distributor;
 
 public final class DistributorFactory {
     private static DistributorFactory instance;

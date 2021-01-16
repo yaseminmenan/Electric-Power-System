@@ -3,20 +3,14 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import input.Input;
 import input.InputLoader;
 import turn.Turn;
-
 import java.io.File;
-import java.io.IOException;
 
 /**
  * Entry point to the simulation
  */
 public final class Main {
 
-    /**
-     * Constructor
-     */
-    private Main() {
-    }
+    private Main() { }
 
     /**
      * Main function which reads the input file and starts simulation
@@ -25,15 +19,9 @@ public final class Main {
      * @throws Exception might error when reading/writing/opening files, parsing JSON
      */
     public static void main(final String[] args) throws Exception {
-        simulate(args[0], args[1]);
-    }
+        String inPath = args[0];
+        String outPath = args[1];
 
-    /**
-     * @param inPath for input file
-     * @param outPath for output file
-     */
-    public static void simulate(final String inPath,
-                                final String outPath) throws IOException {
         // Read data from input file
         InputLoader inputLoader = new InputLoader(inPath);
         Input input = inputLoader.readData();

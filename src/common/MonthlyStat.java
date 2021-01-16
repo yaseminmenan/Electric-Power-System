@@ -1,4 +1,4 @@
-package producer;
+package common;
 
 import java.util.List;
 
@@ -11,27 +11,33 @@ public class MonthlyStat {
         this.distributorsIds = distributorsIds;
     }
 
+    /**
+     *  Get month
+     */
     public int getMonth() {
         return month;
     }
 
+    /**
+     * Set month
+     */
     public void setMonth(int month) {
         this.month = month;
     }
 
+    /**
+     * Get list of distributors that have received energy from the producer
+     */
     public List<Long> getDistributorsIds() {
         return distributorsIds;
     }
 
-    public void setDistributorsIds(List<Long> distributorsIDs) {
-        this.distributorsIds = distributorsIds;
-    }
-
+/*
     @Override
     public String toString() {
         return "MonthlyStat{" +
                 "month=" + month +
                 ", distributorsIDs=" + distributorsIds +
                 '}'+"\n";
-    }
+    }*/
 }

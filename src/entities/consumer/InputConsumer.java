@@ -1,9 +1,9 @@
-package consumer;
+package entities.consumer;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import common.Constants;
 import common.Debt;
 import common.Contract;
-import distributor.InputDistributor;
+import entities.distributor.InputDistributor;
 
 public class InputConsumer implements Consumer {
     private long id;
@@ -22,7 +22,7 @@ public class InputConsumer implements Consumer {
     /**
      * Insert initial data
      */
-    public void insertInitialData(final long id, final long budget, final long monthlyIncome) {
+    public void insertData(final long id, final long budget, final long monthlyIncome) {
         this.id = id;
         this.budget = budget;
         this.monthlyIncome = monthlyIncome;

@@ -1,6 +1,6 @@
-package producer;
+package entities.producer;
 
-public class ProducerFactory {
+public final class ProducerFactory {
         private static ProducerFactory instance;
 
         private ProducerFactory() {

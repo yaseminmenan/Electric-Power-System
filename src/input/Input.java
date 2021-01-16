@@ -1,10 +1,10 @@
 package input;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import common.Constants;
-import consumer.InputConsumer;
-import distributor.InputDistributor;
+import entities.consumer.InputConsumer;
+import entities.distributor.InputDistributor;
 import common.Update;
-import producer.InputProducer;
+import entities.producer.InputProducer;
 
 import java.util.List;
 
@@ -42,10 +42,16 @@ public class Input {
         return monthlyUpdates;
     }
 
+    /**
+     * Get list of energy producers
+     */
     public List<InputProducer> getEnergyProducers() {
         return energyProducers;
     }
 
+    /**
+     * Set list of energy producers
+     */
     public void setEnergyProducers(List<InputProducer> producers) {
         this.energyProducers = producers;
     }
@@ -65,7 +71,7 @@ public class Input {
     }
 
     /**
-     * Get the distributor with a given id
+     * Get the entities.distributor with a given id
      */
     public InputDistributor getDistributor(final long id) {
         for (InputDistributor distributor : this.getDistributors()) {
@@ -77,7 +83,7 @@ public class Input {
     }
 
     /**
-     * Get the consumer with a given id
+     * Get the entities.consumer with a given id
      */
     public InputConsumer getConsumer(final long id) {
         for (InputConsumer consumer : this.getConsumers()) {
@@ -88,6 +94,9 @@ public class Input {
         return null;
     }
 
+    /**
+     * Return producer with a given id
+     */
     public InputProducer getProducer(final long id) {
         for (InputProducer producer : this.getEnergyProducers()) {
             if (producer.getId() == id) {
@@ -98,29 +107,29 @@ public class Input {
     }
 
     /**
-     * Get the distributor with the cheapest contract cost
+     * Get the entities.distributor with the cheapest contract cost
      */
     public InputDistributor chooseCheapestDistributor() {
         long contractCost = Constants.MAXVALUE;
         InputDistributor cheapestDistributor = null;
 
         for (InputDistributor distributor : this.getDistributors()) {
-            // Skip the distributor if it is bankrupt
+            // Skip the entities.distributor if it is bankrupt
             if (distributor.getIsBankrupt()) {
                 continue;
             }
             // Calculate contract cost
             distributor.calculateContractCost();
             long cost = distributor.getContractCost();
-            // long cost = distributor.calculateContractCost();
+            // long cost = entities.distributor.calculateContractCost();
             // If the newly calculated cost is cheaper, set it as the
-            // cheapest contract cost and retain the distributor
+            // cheapest contract cost and retain the entities.distributor
             if (contractCost > cost) {
                 contractCost = cost;
                 cheapestDistributor = distributor;
             }
         }
-        // Return the distributor with the cheapest cost
+        // Return the entities.distributor with the cheapest cost
         return cheapestDistributor;
     }
 

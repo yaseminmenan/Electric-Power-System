@@ -1,4 +1,4 @@
-package consumer;
+package entities.consumer;
 
 public final class ConsumerFactory {
     private static ConsumerFactory instance;

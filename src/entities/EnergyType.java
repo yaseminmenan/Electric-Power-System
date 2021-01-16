@@ -8,7 +8,8 @@ public enum EnergyType {
     SOLAR("SOLAR", true),
     HYDRO("HYDRO", true),
     COAL("COAL", false),
-    NUCLEAR("NUCLEAR", false);
+    NUCLEAR("NUCLEAR", false),
+    NONE("NONE", false);
 
     private final String label;
 

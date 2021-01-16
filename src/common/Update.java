@@ -1,15 +1,14 @@
 package common;
 
-import consumer.InputConsumer;
-import distributor.InputDistributor;
+import entities.consumer.InputConsumer;
+import entities.distributor.InputDistributor;
 import input.Input;
-import producer.InputProducer;
+import entities.producer.InputProducer;
 
 import java.util.List;
 
 public class Update {
     private List<InputConsumer> newConsumers;
-    //distributorChanges
     private List<InputDistributor> distributorChanges;
     private List<InputProducer> producerChanges;
 
@@ -57,36 +56,35 @@ public class Update {
                 // Change infrastructure cost
                 inputDistributor.setInfrastructureCost(
                         inputDistributorChange.getInfrastructureCost());
-                // Change productions cost
             }
         }
 
     }
 
+    /**
+     * Return list of producer energy per distributor changes
+     */
     public List<InputProducer> getProducerChanges() {
         return producerChanges;
     }
 
+    /**
+     * Set list of producer changes
+     */
     public void setProducerChanges(List<InputProducer> producerChanges) {
         this.producerChanges = producerChanges;
     }
 
+    /**
+     * Update the list of producers
+     */
     public void updateProducers(final Input input) {
         if (this.producerChanges.size() != 0) {
-            for( InputProducer producerChange : this.producerChanges) {
+            for (InputProducer producerChange : this.producerChanges) {
                 InputProducer producer = input.getProducer(producerChange.getId());
-                producer.setChanged(producerChange, input);
-                // producer.setEnergyPerDistributor(producerChange.getEnergyPerDistributor());
+                producer.setChanged(producerChange);
             }
         }
     }
 
-    @Override
-    public String toString() {
-        return "Update{" +
-                "newConsumers=" + newConsumers +
-                "\n, distributorChanges=" + distributorChanges +
-                "\n, producerChanges=" + producerChanges +
-                '}';
-    }
 }

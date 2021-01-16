@@ -18,10 +18,8 @@ package common;
         public static final String MONTHLYINCOME = "monthlyIncome";
         public static final String CONTRACTLENGTH = "contractLength";
         public static final String INITIALINFRCOST = "initialInfrastructureCost";
-        public static final String INITIALPRODCOST = "initialProductionCost";
         public static final String DISTRCHANGES = "distributorChanges";
         public static final String INFRCOST = "infrastructureCost";
-        //public static final String PRODCOST = "productionCost";
         public static final String NEWCONSUMERS = "newConsumers";
         public static final String ENERGYNEEDEDKW = "energyNeededKW";
         public static final String PRODUCERSTRATEGY = "producerStrategy";
@@ -34,10 +32,7 @@ package common;
 
         public static final double PROFIT = 0.2;
         public static final double DEBT = 1.2;
-        public static final int ZERO = 0;
-        public static final int ONE  = 1;
-        public static final int TWO = 2;
-        public static final int THREE = 3;
-        public static final int FOUR = 4;
+        public static final int TEN = 10;
         public static final long MAXVALUE = 0x7fffffffffffffffL;
+        public static final double THRESHOLD =  0.000001;
     }
